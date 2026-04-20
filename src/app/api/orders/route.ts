@@ -49,6 +49,7 @@ export async function POST(request: Request) {
         price: true,
         inventory: true,
         availableForSale: true,
+        status: true,
         featuredImage: true,
         images: true,
       },
@@ -60,11 +61,14 @@ export async function POST(request: Request) {
     const enrichedItems = input.items.map((item) => {
       const product = productById.get(item.productId);
       if (!product) {
-        throw new Error("One or more products are not available");
+        throw new Error("One or more products are not available. Please check if all products are active.");
       }
       if (!product.availableForSale) {
         throw new Error(`Product not available for sale: ${product.title}`);
       }
+      // if (product.inventory < item.quantity) {
+      //   throw new Error(`Insufficient inventory for ${product.title}. Available: ${product.inventory}`);
+      // }
       const images = Array.isArray(product.images)
         ? (product.images as unknown[]).filter((x): x is string => typeof x === "string")
         : [];

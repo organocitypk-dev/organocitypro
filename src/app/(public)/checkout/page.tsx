@@ -51,7 +51,7 @@ export default function CheckoutPage() {
             country: "PK",
           },
           items: cart.lines.map((line) => ({
-            productId: line.merchandise.id,
+            productId: line.merchandise.id.replace(/-simple$/, ""),
             quantity: line.quantity,
           })),
         }),
