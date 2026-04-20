@@ -6,7 +6,7 @@ import { Home, Grid3X3, Phone } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { BsChatDots } from "react-icons/bs";
 
-const PHONE_NUMBER = "923234567890";
+const PHONE_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "923171707418";
 
 const btnBase =
   "flex items-center justify-center w-[46px] h-[46px] rounded-[13px] flex-shrink-0 transition-all duration-200 active:scale-95";
