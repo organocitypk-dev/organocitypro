@@ -48,7 +48,7 @@ export function Cart() {
   const isCartEmpty = (cart?.totalQuantity ?? 0) === 0;
 
   return (
-    <section className="w-full px-4 py-8 sm:px-6 lg:px-8 pb-24 sm:pb-8">
+    <section className="w-full px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto w-full max-w-[720px]">
         <Card className="overflow-hidden rounded-3xl border border-[#C6A24A]/20 bg-white shadow-[0_10px_40px_rgba(0,0,0,0.06)]">
           <CardHeader className="border-b border-[#C6A24A]/15 bg-[#F6F1E7]/60 px-5 py-4 sm:px-6">
@@ -140,7 +140,7 @@ export function Cart() {
             )}
           </CardContent>
 
-          <CardFooter className="border-t border-[#C6A24A]/15 bg-white px-5 py-5 sm:px-6 pb-safe">
+          <CardFooter className="border-t border-[#C6A24A]/15 bg-white px-5 py-5 sm:px-6 mb-16 lg:mb-0">
             <div className="w-full space-y-4">
               <div className="flex items-center justify-between text-sm font-medium text-[#1E1F1C]">
                 <span>Subtotal</span>

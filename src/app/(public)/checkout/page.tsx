@@ -93,7 +93,7 @@ export default function CheckoutPage() {
 
   if (isEmpty) {
     return (
-      <main className="min-h-screen bg-[#F6F1E7] px-6 py-16 pb-24">
+      <main className="min-h-screen bg-[#F6F1E7] px-6 py-16">
         <div className="mx-auto max-w-xl rounded-2xl border border-[#C6A24A]/20 bg-white p-8 text-center">
           <h1 className="text-2xl font-bold text-[#1E1F1C]">Checkout</h1>
           <p className="mt-2 text-sm text-[#5A5E55]">Your cart is empty.</p>
@@ -109,7 +109,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F6F1E7] px-6 py-10 pb-24">
+    <main className="min-h-screen bg-[#F6F1E7] px-6 py-10">
       <div className="mx-auto max-w-5xl">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-[#1E1F1C]">Checkout</h1>
