@@ -22,13 +22,33 @@ import {
 import { Button } from "@esmate/shadcn/components/ui/button";
 import { Separator } from "@esmate/shadcn/components/ui/separator";
 import { Badge } from "@esmate/shadcn/components/ui/badge";
+import { FaWhatsapp } from "react-icons/fa";
+
+const WHATSAPP_NUMBER = "923234567890";
+
+function buildWhatsAppMessage(cart: any) {
+  const items = cart.lines
+    .map((line: any) => {
+      const title = line?.merchandise?.product?.title || "Product";
+      const qty = line?.quantity || 1;
+      const price = Number(line?.cost?.totalAmount?.amount || 0).toLocaleString();
+      return `• ${title} x${qty} - Rs. ${price}`;
+    })
+    .join("%0A");
+
+  const subtotal = cart.lines
+    .reduce((sum: number, line: any) => sum + Number(line.cost?.totalAmount?.amount || 0), 0)
+    .toLocaleString();
+
+  return `Hi OrganoCity,%0A%0AI would like to order:%0A${items}%0A%0ATotal: Rs. ${subtotal}%0A%0APlease confirm my order. Thank you!`;
+}
 
 export function Cart() {
   const cart = useCart();
   const isCartEmpty = (cart?.totalQuantity ?? 0) === 0;
 
   return (
-    <section className="w-full px-4 py-8 sm:px-6 lg:px-8">
+    <section className="w-full px-4 py-8 sm:px-6 lg:px-8 pb-24 sm:pb-8">
       <div className="mx-auto w-full max-w-[720px]">
         <Card className="overflow-hidden rounded-3xl border border-[#C6A24A]/20 bg-white shadow-[0_10px_40px_rgba(0,0,0,0.06)]">
           <CardHeader className="border-b border-[#C6A24A]/15 bg-[#F6F1E7]/60 px-5 py-4 sm:px-6">
@@ -120,7 +140,7 @@ export function Cart() {
             )}
           </CardContent>
 
-          <CardFooter className="border-t border-[#C6A24A]/15 bg-white px-5 py-5 sm:px-6">
+          <CardFooter className="border-t border-[#C6A24A]/15 bg-white px-5 py-5 sm:px-6 pb-safe">
             <div className="w-full space-y-4">
               <div className="flex items-center justify-between text-sm font-medium text-[#1E1F1C]">
                 <span>Subtotal</span>
@@ -137,6 +157,16 @@ export function Cart() {
               >
                 Checkout
               </CartCheckoutButton>
+
+              <a
+                href={`https://wa.me/${WHATSAPP_NUMBER}?text=${buildWhatsAppMessage(cart)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex h-12 w-full items-center justify-center rounded-full bg-[#25D366] text-sm font-semibold text-white transition hover:bg-[#128C7E] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366]"
+              >
+                <FaWhatsapp className="mr-2 h-5 w-5" />
+                Order on WhatsApp
+              </a>
 
               <Button
                 variant="link"

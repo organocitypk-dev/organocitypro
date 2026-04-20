@@ -4,6 +4,26 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/commerce";
+import { FaWhatsapp } from "react-icons/fa";
+
+const WHATSAPP_NUMBER = "923234567890";
+
+function buildWhatsAppMessage(cart: any, customerName: string, customerPhone: string, line1: string, line2: string, city: string, pincode: string) {
+  const items = cart.lines
+    .map((line: any) => {
+      const title = line?.merchandise?.product?.title || "Product";
+      const qty = line?.quantity || 1;
+      const price = Number(line?.cost?.totalAmount?.amount || 0).toLocaleString();
+      return `• ${title} x${qty} - Rs. ${price}`;
+    })
+    .join("%0A");
+
+  const subtotal = cart.lines
+    .reduce((sum: number, line: any) => sum + Number(line.cost?.totalAmount?.amount || 0), 0)
+    .toLocaleString();
+
+  return `Hi OrganoCity,%0A%0AI would like to order:%0A${items}%0A%0ATotal: Rs. ${subtotal}%0A%0ACustomer: ${customerName}%0APhone: ${customerPhone}%0AAddress: ${line1}${line2 ? ', ' + line2 : ''}, ${city}${pincode ? ' - ' + pincode : ''}%0A%0APlease confirm my order. Thank you!`;
+}
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -73,7 +93,7 @@ export default function CheckoutPage() {
 
   if (isEmpty) {
     return (
-      <main className="min-h-screen bg-[#F6F1E7] px-6 py-16">
+      <main className="min-h-screen bg-[#F6F1E7] px-6 py-16 pb-24">
         <div className="mx-auto max-w-xl rounded-2xl border border-[#C6A24A]/20 bg-white p-8 text-center">
           <h1 className="text-2xl font-bold text-[#1E1F1C]">Checkout</h1>
           <p className="mt-2 text-sm text-[#5A5E55]">Your cart is empty.</p>
@@ -89,7 +109,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F6F1E7] px-6 py-10">
+    <main className="min-h-screen bg-[#F6F1E7] px-6 py-10 pb-24">
       <div className="mx-auto max-w-5xl">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-[#1E1F1C]">Checkout</h1>
@@ -192,6 +212,16 @@ export default function CheckoutPage() {
             >
               {submitting ? "Placing order..." : "Place order (COD)"}
             </button>
+
+            <a
+              href={`https://wa.me/${WHATSAPP_NUMBER}?text=${buildWhatsAppMessage(cart, customerName, customerPhone, line1, line2, city, pincode)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 flex w-full items-center justify-center rounded-full bg-[#25D366] px-6 py-3 text-sm font-semibold text-white hover:bg-[#128C7E]"
+            >
+              <FaWhatsapp className="mr-2 h-5 w-5" />
+              Order on WhatsApp
+            </a>
 
             <p className="mt-3 text-xs text-[#5A5E55]">
               By placing an order, you confirm your details are correct.
