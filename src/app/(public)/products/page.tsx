@@ -8,26 +8,33 @@ export const revalidate = 60;
 /* ---------------- SEO METADATA ---------------- */
 
 export const metadata: Metadata = {
-  title: "All Products | OrganoCity Pink Salt, Shilajit & Salt Lamps",
+  title: "Shop Products | OrganoCity - Shilajit, Pink Salt, Salt Lamps & Herbal",
   description:
-    "Explore OrganoCity’s complete range of Himalayan pink salt products, pure Shilajit, pink salt lamps, edible salt, wellness items, and natural home solutions sourced from the Himalayas.",
+    "Browse OrganoCity's full collection of authentic Shilajit resin, Himalayan pink salt, salt lamps, decorative pieces, edible salt, and natural herbal wellness products from Pakistan.",
 
   keywords: [
-    "Himalayan pink salt",
-    "pink salt products",
-    "pink salt lamps",
-    "pure shilajit",
+    "shilajit",
     "shilajit resin",
+    "pure shilajit",
+    "himalayan pink salt",
+    "pink salt",
+    "pink salt products",
+    "pink salt lamp",
+    "salt lamp",
+    "salt lamps",
     "edible pink salt",
     "rock salt",
-    "natural wellness products",
-    "OrganoCity",
+    "herbal products",
+    "natural wellness",
+    "salt decoration",
+    "decorative pink salt",
+    "pink salt pieces",
   ],
 
   openGraph: {
-    title: "All Products | OrganoCity Himalayan Pink Salt & Shilajit",
+    title: "Shop Products | OrganoCity - Shilajit, Pink Salt & Wellness",
     description:
-      "Browse all OrganoCity products including Himalayan pink salt, authentic Shilajit, pink salt lamps, and natural wellness essentials.",
+      "Browse all OrganoCity products: Shilajit, Himalayan pink salt, salt lamps, decorative pieces, and natural wellness essentials.",
     url: "https://organocity.com/products",
     siteName: "OrganoCity",
     type: "website",
@@ -35,9 +42,9 @@ export const metadata: Metadata = {
 
   twitter: {
     card: "summary_large_image",
-    title: "OrganoCity Products | Pink Salt, Shilajit & Wellness",
+    title: "OrganoCity Products | Shilajit, Pink Salt & Salt Lamps",
     description:
-      "Discover OrganoCity’s full product collection: Himalayan pink salt, Shilajit, salt lamps, and natural health products.",
+      "Discover OrganoCity's full collection: Shilajit, Himalayan pink salt, salt lamps, and natural health products.",
   },
 
   robots: {

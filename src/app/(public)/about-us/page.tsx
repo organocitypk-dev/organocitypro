@@ -1,8 +1,31 @@
 import { Button } from "@esmate/shadcn/components/ui/button"
 import Link from "next/link"
-import Head from "next/head"
 import Image from "next/image"
 import { Leaf, ShieldCheck, Mountain, HeartHandshake } from "@esmate/shadcn/pkgs/lucide-react"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "About Us | OrganoCity - Shilajit, Pink Salt & Herbal Products",
+  description:
+    "Learn about OrganoCity's mission to deliver authentic Himalayan pink salt, pure Shilajit, and natural wellness products. Rooted in purity, inspired by nature.",
+  keywords: [
+    "about OrganoCity",
+    "shilajit company",
+    "pink salt supplier",
+    "himalayan salt Pakistan",
+    "herbal wellness company",
+    "natural products brand",
+  ],
+  openGraph: {
+    title: "About OrganoCity | Shilajit, Pink Salt & Natural Wellness",
+    description:
+      "Discover OrganoCity's story - bringing authentic Himalayan pink salt, Shilajit, and wellness products from Pakistan to your home.",
+    type: "website",
+  },
+  alternates: {
+    canonical: "https://organocity.com/about-us",
+  },
+}
 
 const values = [
   {
@@ -41,9 +64,6 @@ const highlights = [
 export default function AboutPage() {
   return (
     <>
-      <Head>
-        <title>About Us | OrganoCity</title>
-      </Head>
 
       <main className="bg-[#FAF7F0] text-[#1E1F1C]">
         {/* Hero Section */}

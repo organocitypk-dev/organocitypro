@@ -13,6 +13,8 @@ interface Props {
   }>
 }
 
+export const dynamic = "force-dynamic"
+
 /* ===========================
    SEO METADATA
 =========================== */

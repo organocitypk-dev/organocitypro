@@ -5,15 +5,19 @@ import { getCollectionList } from "./service";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "All Collections | OrganoCity Himalayan Pink Salt",
+  title: "Collections | OrganoCity - Shilajit, Pink Salt Lamps & Herbal Products",
   description:
-    "Explore all OrganoCity collections including Himalayan pink salt lamps, edible salt, bath salts, wellness products, and natural lifestyle essentials.",
+    "Explore all OrganoCity collections including Shilajit, Himalayan pink salt lamps, edible salt, bath salts, wellness products, and decorative pink salt pieces.",
   keywords: [
     "OrganoCity collections",
-    "Himalayan pink salt products",
-    "salt lamps",
+    "shilajit collection",
+    "himalayan pink salt products",
+    "pink salt lamps",
+    "salt lamp collection",
     "edible pink salt",
     "bath salts",
+    "salt decoration",
+    "decorative pink salt",
     "natural wellness products",
     "Pakistan pink salt supplier",
   ],
@@ -21,9 +25,9 @@ export const metadata: Metadata = {
     canonical: "https://organocity.com/collections",
   },
   openGraph: {
-    title: "All Collections | OrganoCity",
+    title: "Collections | OrganoCity - Shilajit, Pink Salt & Wellness",
     description:
-      "Discover OrganoCity’s complete range of Himalayan pink salt collections crafted for wellness, lifestyle, and everyday use.",
+      "Discover OrganoCity's complete range of Shilajit, Himalayan pink salt collections for health, home, and lifestyle.",
     url: "https://organocity.com/collections",
     siteName: "OrganoCity",
     type: "website",
@@ -38,9 +42,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "All Collections | OrganoCity",
+    title: "Collections | OrganoCity - Pink Salt & Shilajit",
     description:
-      "Browse all OrganoCity Himalayan pink salt collections for health, home, and lifestyle.",
+      "Browse all OrganoCity collections: Shilajit, Himalayan pink salt, salt lamps, and wellness products.",
     images: ["https://organocity.com/og/collections.jpg"],
   },
 };

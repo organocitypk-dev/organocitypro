@@ -11,27 +11,48 @@ import { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { HomeProducts } from "@/components/home-products";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
-  title: "OrganoCity | Natural Products, Herbal Care, Shilajit & Pink Salt",
+  title: "OrganoCity | Pure Shilajit, Himalayan Pink Salt & Herbal Products",
   description:
-    "Modern multi-product store for natural and herbal products including Shilajit, Himalayan pink salt, wellness products, and daily essentials.",
+    "Shop authentic Shilajit, Himalayan pink salt, herbal wellness products, salt lamps & decorative pieces. OrganoCity offers premium natural products from Pakistan.",
   keywords: [
-    "himalayan salt",
-    "pink salt",
-    "natural products",
-    "herbal products",
     "shilajit",
+    "shilajit resin",
+    "pure shilajit",
+    "himalayan pink salt",
+    "pink salt",
+    "edible pink salt",
+    "rock salt",
+    "herbal products",
+    "natural wellness",
     "salt lamps",
+    "pink salt lamp",
+    "salt decoration",
+    "decorative pink salt",
+    "pink salt pieces",
+    "crystal salt lamp",
+    "himalayan salt lamp",
     "organic salt",
-    "pakistan salt mine",
-    "edible salt",
     "bath salt",
+    "wellness products",
   ],
   openGraph: {
-    title: "OrganoCity | Pure Organic Pink Salt",
+    title: "OrganoCity | Pure Shilajit, Pink Salt & Herbal Wellness",
     description:
-      "Experience the healing power of nature with our authentic Himalayan Pink Salt products.",
+      "Discover authentic Shilajit, Himalayan pink salt products, salt lamps, and natural wellness essentials.",
+    url: "https://organocity.com",
+    siteName: "OrganoCity",
+    type: "website",
     images: ["/images/himalayan-hero.png"],
+  },
+  alternates: {
+    canonical: "https://organocity.com",
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 

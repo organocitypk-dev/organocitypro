@@ -6,6 +6,8 @@ import { StoreProductCard } from "@/components/store-product-card-wrapper";
 
 export const revalidate = 60;
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({
   params,
 }: {

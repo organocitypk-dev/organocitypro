@@ -5,6 +5,9 @@ import { ArrowRight, Calendar } from "@esmate/shadcn/pkgs/lucide-react";
 import { prisma } from "@/lib/prisma";
 
 /* ---------------- SEO METADATA ---------------- */
+export const dynamic = "force-dynamic";
+
+/* ---------------- SEO METADATA ---------------- */
 export const metadata: Metadata = {
   title: "Blog | Organocity Himalayan Pink Salt",
   description:

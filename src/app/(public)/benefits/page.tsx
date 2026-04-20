@@ -11,20 +11,28 @@ import {
 /* ---------------- SEO METADATA ---------------- */
 
 export const metadata: Metadata = {
-  title: "Benefits of Himalayan Pink Salt | Natural Wellness & Health",
+  title: "Benefits of Himalayan Pink Salt, Shilajit & Natural Wellness Products",
   description:
-    "Discover the health, wellness, and lifestyle benefits of Himalayan Pink Salt. Rich in minerals, naturally pure, and trusted for daily use.",
+    "Discover the health and wellness benefits of Himalayan Pink Salt, Shilajit, and natural products. Rich in minerals, naturally pure, and trusted for daily use and holistic health.",
   keywords: [
-    "Himalayan pink salt benefits",
+    "himalayan pink salt benefits",
+    "shilajit benefits",
+    "shilajit health benefits",
     "natural salt minerals",
     "pink salt health benefits",
     "pure Himalayan salt",
+    "mineral-rich salt",
+    "wellness products",
+    "natural wellness",
   ],
   openGraph: {
-    title: "Benefits of Himalayan Pink Salt",
+    title: "Benefits of Himalayan Pink Salt & Shilajit",
     description:
-      "Explore why Himalayan Pink Salt is valued for wellness, purity, and everyday health.",
+      "Explore why Himalayan Pink Salt and Shilajit are valued for wellness, purity, and everyday health benefits.",
     type: "website",
+  },
+  alternates: {
+    canonical: "https://organocity.com/benefits",
   },
 };
 
