@@ -41,7 +41,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed right-0 top-0 z-[60] flex h-full w-full max-w-sm flex-col border-l border-[#C6A24A]/20 bg-white/95 shadow-xl sm:max-w-md"
+            className="fixed right-0 top-0 z-[60] flex h-full w-[85%] max-w-xs flex-col border-l border-[#C6A24A]/20 bg-white/95 shadow-xl sm:w-full sm:max-w-md"
           >
              <div className="flex items-center justify-between border-b border-[#C6A24A]/15 bg-[#F6F1E7]/80 px-3 py-3 sm:px-5 sm:py-4">
                <div className="flex items-center gap-2">
@@ -154,7 +154,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
             </div>
 
             {!isCartEmpty && (
-              <div className="border-t border-[#C6A24A]/15 bg-white px-5 pb-16 pt-5 lg:pb-5">
+              <div className="border-t border-[#C6A24A]/15 bg-white px-3 pb-20 pt-5 lg:px-5 lg:pb-5">
                  <div className="space-y-2 sm:space-y-3">
                    <div className="flex items-center justify-between text-xs font-medium text-[#1E1F1C] sm:text-sm">
                      <span>Subtotal</span>
