@@ -13,10 +13,23 @@ import { HomeProducts } from "@/components/home-products";
 
 export const dynamic = "force-dynamic";
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Organocity",
+  "url": "https://organocity.com",
+  "logo": "https://organocity.com/images/logo.png",
+  "sameAs": [
+    "https://www.facebook.com/organocity",
+    "https://www.instagram.com/organocity",
+    "https://twitter.com/organocity"
+  ]
+};
+
 export const metadata: Metadata = {
-  title: "OrganoCity | Pure Shilajit, Himalayan Pink Salt & Herbal Products",
+  title: "Organocity | Pure Shilajit, Himalayan Pink Salt & Herbal Products",
   description:
-    "Shop authentic Shilajit, Himalayan pink salt, herbal wellness products, salt lamps & decorative pieces. OrganoCity offers premium natural products from Pakistan.",
+    "Shop authentic Shilajit, Himalayan pink salt, herbal wellness products, salt lamps & decorative pieces. Organocity offers premium natural products from Pakistan.",
   keywords: [
     "shilajit",
     "shilajit resin",
@@ -39,11 +52,11 @@ export const metadata: Metadata = {
     "wellness products",
   ],
   openGraph: {
-    title: "OrganoCity | Pure Shilajit, Pink Salt & Herbal Wellness",
+    title: "Organocity | Pure Shilajit, Pink Salt & Herbal Wellness",
     description:
       "Discover authentic Shilajit, Himalayan pink salt products, salt lamps, and natural wellness essentials.",
     url: "https://organocity.com",
-    siteName: "OrganoCity",
+    siteName: "Organocity",
     type: "website",
     images: ["/images/himalayan-hero.png"],
   },
@@ -97,9 +110,15 @@ export default async function Page() {
     }),
   ]);
 
-   return (
-     <div className="flex flex-col gap-4 bg-[#F6F1E7]">
-       <Hero />
+return (
+      <>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      <div className="flex flex-col gap-4 bg-[#F6F1E7]">
+        <Hero />
+        <h1 className="sr-only">Organocity - Premium Himalayan Pink Salt, Shilajit & Herbal Wellness Products</h1>
        <HomeProducts categories={categories} products={featuredProducts} collections={featuredCollections} />
 
       {/* Benefits Section */}
@@ -217,6 +236,7 @@ export default async function Page() {
       {/* Certifications Slider */}
       <CertificationsSlider initialData={certificates.length > 0 ? certificates : undefined} />
     </div>
+    </>
   );
 }
 
