@@ -12,7 +12,7 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
       <AnnouncementBar />
       <Header />
       <SiteLoader />
-      <main className="flex-grow pb-12 lg:pb-0">{children}</main>
+        <main className="flex-grow pb-16 md:pb-0">{children}</main>
       <Footer />
       <MobileBottomNav />
       <ChatIntegrations />

@@ -8,9 +8,6 @@ import { BsChatDots } from "react-icons/bs";
 
 const PHONE_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "923171707418";
 
-const btnBase =
-  "flex items-center justify-center w-[46px] h-[46px] rounded-[13px] flex-shrink-0 transition-all duration-200 active:scale-95";
-
 export function MobileBottomNav() {
   const pathname = usePathname();
 
@@ -24,69 +21,45 @@ export function MobileBottomNav() {
   const productsActive = isActive("/products");
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden">
-      <div className="mx-2 mb-3">
-        <div
-          className="flex items-center justify-between h-[64px] px-3 rounded-[16px]
-            bg-[#f7f3ef]/88 dark:bg-[#1a1410]/70
-            backdrop-blur-2xl
-            border border-[#C8856A]/25 dark:border-[#C8856A]/15
-            shadow-[0_2px_12px_rgba(31,107,79,0.08),inset_0_1px_0_rgba(255,255,255,0.8)]
-            dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
-        >
-
+    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
+      <div className="bg-[#1E1F1C] border-t border-white/10">
+        <div className="flex justify-around py-1.5">
           {/* AI Chat */}
           <button
             onClick={openChat}
             aria-label="Open AI chat"
-            className={`${btnBase} bg-[#1F6B4F]/10 dark:bg-[#1F6B4F]/22`}
+            className="flex items-center justify-center px-4 py-2.5 transition-colors"
           >
-            <BsChatDots size={24} className="text-[#1F6B4F] dark:text-[#6ecfaa]" />
+            <BsChatDots className="h-5 w-5 text-[#C6A24A]" />
           </button>
 
           {/* Home */}
           <Link
             href="/"
-            className={`${btnBase} ${
-              homeActive
-                ? "bg-[#1F6B4F]/18 dark:bg-[#2e9e72]/28"
-                : "bg-[#1F6B4F]/10 dark:bg-[#1F6B4F]/20"
+            className={`flex items-center justify-center px-4 py-2.5 transition-colors ${
+              homeActive ? "text-[#C6A24A]" : "text-gray-400"
             }`}
           >
-            <Home
-              size={24}
-              strokeWidth={homeActive ? 2.2 : 1.8}
-              className="text-[#155c40] dark:text-[#7ddcb8]"
-            />
+            <Home className="h-5 w-5" />
           </Link>
 
           {/* Products */}
           <Link
             href="/products"
-            className={`${btnBase} ${
-              productsActive
-                ? "bg-[#1F6B4F]/16 dark:bg-[#2e9e72]/24"
-                : "bg-[#1F6B4F]/10 dark:bg-[#1F6B4F]/18"
+            className={`flex items-center justify-center px-4 py-2.5 transition-colors ${
+              productsActive ? "text-[#C6A24A]" : "text-gray-400"
             }`}
           >
-            <Grid3X3
-              size={24}
-              strokeWidth={productsActive ? 2.1 : 1.8}
-              className="text-[#1F6B4F] dark:text-[#6ecfaa]"
-            />
+            <Grid3X3 className="h-5 w-5" />
           </Link>
 
           {/* Phone */}
           <a
             href={`tel:+${PHONE_NUMBER}`}
             aria-label="Call us"
-            className={`${btnBase} bg-[#C8856A]/14 dark:bg-[#C8856A]/20`}
+            className="flex items-center justify-center px-4 py-2.5 transition-colors text-gray-400"
           >
-            <Phone
-              size={24}
-              strokeWidth={1.9}
-              className="text-[#C8856A] dark:text-[#E8A882]"
-            />
+            <Phone className="h-5 w-5" />
           </a>
 
           {/* WhatsApp */}
@@ -95,14 +68,10 @@ export function MobileBottomNav() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="WhatsApp"
-            className={`${btnBase} bg-[#25D366]/13 dark:bg-[#25D366]/18`}
+            className="flex items-center justify-center px-4 py-2.5 transition-colors text-gray-400"
           >
-            <FaWhatsapp
-              size={24}
-              className="text-[#19a84e] dark:text-[#25D366]"
-            />
+            <FaWhatsapp className="h-5 w-5" />
           </a>
-
         </div>
       </div>
     </nav>
