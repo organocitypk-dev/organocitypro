@@ -68,7 +68,11 @@ export function Footer() {
           <div>
             <h3 className="text-sm font-semibold leading-6 text-[#F6F1E7]">Customer Care</h3>
             <ul role="list" className="mt-4 space-y-2">
-              
+              <li>
+                <Link href="/admin/login" className="text-sm text-[#F6F1E7]/85 hover:text-[#C6A24A] transition-colors">
+                  Login
+                </Link>
+              </li>
               <li>
                 <Link href="/contact" className="text-sm text-[#F6F1E7]/85 hover:text-[#C6A24A] transition-colors">
                   Contact Us
