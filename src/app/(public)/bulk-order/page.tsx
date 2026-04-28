@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { useForm, ValidationError } from "@formspree/react";
 import {
@@ -15,6 +16,7 @@ import { Button } from "@esmate/shadcn/components/ui/button";
 import { Input } from "@esmate/shadcn/components/ui/input";
 import { Textarea } from "@esmate/shadcn/components/ui/textarea";
 import { Card, CardContent } from "@esmate/shadcn/components/ui/card";
+import { lead } from "@/lib/pixel";
 
 const WHATSAPP = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER!;
 const FORMSPREE_ID = process.env.NEXT_PUBLIC_FORMSPREE_ID!;
@@ -25,6 +27,13 @@ const ADDRESS_2 = process.env.NEXT_PUBLIC_OFFICE_ADDRESS_LINE2!;
 
 export default function BulkOrderPage() {
   const [state, handleSubmit] = useForm(FORMSPREE_ID);
+
+  // Track Lead event when form is successfully submitted
+  useEffect(() => {
+    if (state.succeeded) {
+      lead();
+    }
+  }, [state.succeeded]);
 
   return (
     <div className="bg-[#F6F1E7]">

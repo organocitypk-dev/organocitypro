@@ -6,6 +6,7 @@ import { FaWhatsapp, FaShoppingCart } from "react-icons/fa";
 import { Money, useCart } from "@/lib/commerce";
 import { toast } from "sonner";
 import { useState } from "react";
+import { addToCart as trackAddToCart } from "@/lib/pixel";
 
 type ProductCardProps = {
   handle: string;
@@ -54,6 +55,10 @@ export function StoreProductCard({
       toast.success("Added to cart", {
         description: title,
       });
+
+      // Track AddToCart event
+      const priceValue = price ? parseFloat(price.amount) : 0;
+      trackAddToCart(title, effectiveVariantId, priceValue);
     } catch {
       toast.error("Failed to add to cart");
     } finally {

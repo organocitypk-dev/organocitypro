@@ -1,9 +1,10 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import {
-  CartCheckoutButton,
   CartCost,
   CartLineProvider,
   CartLineQuantity,
@@ -11,6 +12,7 @@ import {
   Money,
   useCart,
 } from "@/lib/commerce";
+import { viewCart, initiateCheckout } from "@/lib/pixel";
 
 import {
   Card,
@@ -44,8 +46,26 @@ function buildWhatsAppMessage(cart: any) {
 }
 
 export function Cart() {
+  const router = useRouter();
   const cart = useCart();
   const isCartEmpty = (cart?.totalQuantity ?? 0) === 0;
+
+  useEffect(() => {
+    // Track ViewCart event when cart page loads
+    if (!isCartEmpty) {
+      viewCart();
+    }
+  }, [isCartEmpty]);
+
+  const handleCheckout = () => {
+    // Track InitiateCheckout event
+    const subtotal = cart.lines.reduce(
+      (sum, line) => sum + Number(line.cost?.totalAmount?.amount || 0),
+      0,
+    );
+    initiateCheckout(subtotal);
+    router.push("/checkout");
+  };
 
   return (
     <section className="w-full px-4 py-8 sm:px-6 lg:px-8">
@@ -151,12 +171,13 @@ export function Cart() {
                 Shipping and taxes calculated at checkout.
               </p>
 
-              <CartCheckoutButton
+              <button
+                onClick={handleCheckout}
                 disabled={isCartEmpty}
                 className="inline-flex h-12 w-full items-center justify-center rounded-full bg-[#1F6B4F] text-sm font-semibold text-[#F6F1E7] transition hover:bg-[#17513D] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F6B4F] disabled:pointer-events-none disabled:opacity-50"
               >
                 Checkout
-              </CartCheckoutButton>
+              </button>
 
               <a
                 href={`https://wa.me/${WHATSAPP_NUMBER}?text=${buildWhatsAppMessage(cart)}`}

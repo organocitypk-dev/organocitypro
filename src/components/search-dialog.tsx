@@ -9,6 +9,7 @@ import { Search as SearchIcon } from "@esmate/shadcn/pkgs/lucide-react";
 import { searchProducts } from "./search/actions";
 import Image from "next/image";
 import { useDebounce } from "@esmate/react/ahooks";
+import { search } from "@/lib/pixel";
 
 interface Props {
   open: boolean;
@@ -49,6 +50,14 @@ export function SearchDialog({ open, onOpenChange }: Props) {
     router.push(`/products/${handle}`);
   };
 
+  const handleSearch = (value: string) => {
+    setQuery(value);
+    // Track Search event when user types a search query
+    if (value.trim().length >= 3) {
+      search(value);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="p-0 sm:max-w-[550px]">
@@ -59,7 +68,7 @@ export function SearchDialog({ open, onOpenChange }: Props) {
             <CommandInput
               placeholder="Search products..."
               value={query}
-              onValueChange={setQuery}
+              onValueChange={handleSearch}
               className="flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
             />
           </div>

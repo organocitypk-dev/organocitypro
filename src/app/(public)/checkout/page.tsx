@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/commerce";
 import { FaWhatsapp } from "react-icons/fa";
+import { addPaymentInfo, purchase } from "@/lib/pixel";
 
 const WHATSAPP_NUMBER = "923234567890";
 
@@ -55,6 +56,9 @@ export default function CheckoutPage() {
     setError(null);
 
     try {
+      // Track AddPaymentInfo event when user submits payment
+      addPaymentInfo();
+
       const res = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -81,6 +85,9 @@ export default function CheckoutPage() {
       if (!res.ok) {
         throw new Error(data?.error || "Failed to place order");
       }
+
+      // Track Purchase event
+      purchase(data.order.orderNumber, subtotal);
 
       cart.clear();
       router.push(`/checkout/success?orderNumber=${encodeURIComponent(data.order.orderNumber)}`);

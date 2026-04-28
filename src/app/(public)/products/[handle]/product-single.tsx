@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { FaWhatsapp } from "react-icons/fa";
 
 import { Money, ProductProvider, useCart } from "@/lib/commerce";
+import { viewContent, addToCart as trackAddToCart, addToWishlist as trackAddToWishlist } from "@/lib/pixel";
 
 import { Button } from "@esmate/shadcn/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@esmate/shadcn/components/ui/card";
@@ -68,7 +69,17 @@ export function ProductSingle({ data }: Props) {
 
   useEffect(() => {
     if (typeof window !== "undefined") setUrl(window.location.href);
-  }, []);
+
+    // Track ViewContent event on product page load
+    const targetVariantId = defaultVariantId;
+    const price = targetVariantId
+      ? parseFloat(
+          data.variants?.nodes.find((v) => v.id === targetVariantId)?.price
+            .amount || "0",
+        )
+      : 0;
+    viewContent(data.title, targetVariantId || data.handle, price);
+  }, [data.title, data.handle, data.variants?.nodes, defaultVariantId]);
 
   const changeQty = (n: number) => setQuantity((q) => Math.max(1, q + n));
 
@@ -84,6 +95,12 @@ export function ProductSingle({ data }: Props) {
         description: `${quantity} × ${data.title}`,
         icon: <ShoppingCart className="h-4 w-4" />,
       });
+
+      // Track AddToCart event
+      const price = selectedVariant
+        ? parseFloat(selectedVariant.price.amount)
+        : 0;
+      trackAddToCart(data.title, targetVariantId, price);
     } catch {
       toast.error("Failed to add to cart");
     }
@@ -114,6 +131,15 @@ export function ProductSingle({ data }: Props) {
   const toggleWishlist = () => {
     setWishlisted((w) => !w);
     toast.success(!wishlisted ? "Added to wishlist" : "Removed from wishlist");
+
+    // Track AddToWishlist event (only when adding)
+    if (!wishlisted) {
+      const targetVariantId = variantId || selectedVariant?.id || defaultVariantId;
+      const price = selectedVariant
+        ? parseFloat(selectedVariant.price.amount)
+        : 0;
+      trackAddToWishlist(data.title, targetVariantId || data.handle, price);
+    }
   };
 
   const shareUrl = encodeURIComponent(url);

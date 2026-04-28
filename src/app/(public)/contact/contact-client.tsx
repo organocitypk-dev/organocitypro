@@ -11,6 +11,7 @@ import {
   MessageCircle,
   ChevronDown,
 } from "@esmate/shadcn/pkgs/lucide-react";
+import { lead } from "@/lib/pixel";
 
 const faqs = [
   {
@@ -67,6 +68,9 @@ export default function ContactClient() {
       if (!res.ok) {
         throw new Error(data?.error || "Failed to send message");
       }
+
+      // Track Lead event on successful form submission
+      lead();
 
       setSubmitted(true);
       setName("");
