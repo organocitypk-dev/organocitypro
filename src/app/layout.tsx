@@ -4,6 +4,8 @@ import "./globals.css";
 import type { Metadata } from "next";
 import InstallPrompt from "@/components/InstallPrompt";
 import ServiceWorkerRegistration from "@/components/service-worker-registration";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: "Organocity",
@@ -50,6 +52,8 @@ export default function RootLayout({
       <body>
         <Providers>
           {children}
+          <SpeedInsights />
+          <Analytics />
         </Providers>
         {/* Meta Pixel Code - Noscript */}
         <noscript>
