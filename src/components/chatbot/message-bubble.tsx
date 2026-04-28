@@ -1,6 +1,6 @@
 "use client";
 
-import DOMPurify from "isomorphic-dompurify";
+import DOMPurify from "dompurify";
 import { useCart } from "@/lib/commerce";
 import { toast } from "sonner";
 

@@ -4,7 +4,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { Calendar } from "@esmate/shadcn/pkgs/lucide-react"
 import { Metadata } from "next"
-import DOMPurify from "isomorphic-dompurify"
+import DOMPurify from "dompurify"
 
 interface Props {
   params: Promise<{
