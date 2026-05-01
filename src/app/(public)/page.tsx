@@ -183,12 +183,9 @@ return (
             </CardContent>
           </Card>
         </div>
-      </section>
+       </section>
 
-      {/* Testimonials */}
-      <Testimonials />
-
-      {/* Essence */}
+       {/* Essence */}
       <EssenceSection initialData={essenceSection ? {
         title: essenceSection.title,
         subtitle: essenceSection.subtitle,
@@ -222,19 +219,22 @@ return (
         </section>
       )}
 
-      {/* Blog */}
-      <BlogSection articles={featuredBlogs.map(b => ({
-        id: b.id,
-        title: b.title,
-        handle: b.slug,
-        publishedAt: b.publishedAt?.toISOString() ?? "",
-        content: b.content ?? "",
-        image: b.featuredImage ? { url: b.featuredImage } : null,
-        blogHandle: "news"
-      }))} />
+       {/* Blog */}
+       <BlogSection articles={featuredBlogs.map(b => ({
+         id: b.id,
+         title: b.title,
+         handle: b.slug,
+         publishedAt: b.publishedAt?.toISOString() ?? "",
+         content: b.content ?? "",
+         image: b.featuredImage ? { url: b.featuredImage } : null,
+         blogHandle: "news"
+       }))} />
 
-      {/* Certifications Slider */}
-      <CertificationsSlider initialData={certificates.length > 0 ? certificates : undefined} />
+       {/* Testimonials */}
+       <Testimonials />
+
+       {/* Certifications Slider */}
+       <CertificationsSlider initialData={certificates.length > 0 ? certificates : undefined} />
     </div>
     </>
   );

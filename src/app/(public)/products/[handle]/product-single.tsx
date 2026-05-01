@@ -115,7 +115,7 @@ export function ProductSingle({ data }: Props) {
     setBuyLoading(true);
     try {
       await linesAdd([{ merchandiseId: targetVariantId, quantity }]);
-      router.push("/cart");
+      router.push("/checkout");
     } catch {
       toast.error("Checkout failed");
     } finally {
