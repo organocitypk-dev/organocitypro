@@ -68,6 +68,12 @@ type ProductNode = {
       sku?: string | null;
     }[];
   };
+  variations: {
+    id: string;
+    name: string;
+    value: string;
+    price: MoneyV2;
+  }[];
   vendor: string;
   productType: string | null;
   tags: string[];
@@ -217,6 +223,12 @@ async function buildProductNode(product: {
   vendor: string;
   tags: Prisma.JsonValue;
   collectionIds: Prisma.JsonValue;
+  variations: Array<{
+    id: string;
+    name: string;
+    value: string;
+    price: number;
+  }>;
 }) {
   const imageUrls = parseStringArray(product.images);
   const images = imageUrls
@@ -269,6 +281,12 @@ async function buildProductNode(product: {
     vendor: product.vendor,
     productType: product.productType,
     tags: parseStringArray(product.tags),
+    variations: product.variations.map((v) => ({
+      id: v.id,
+      name: v.name,
+      value: v.value,
+      price: toMoney(v.price),
+    })),
     metafields: [
       { key: "vendor", value: product.vendor },
       { key: "sku", value: product.sku ?? "N/A" },
@@ -344,6 +362,14 @@ export async function getProduct(handle: string) {
       tags: true,
       collectionIds: true,
       status: true,
+      variations: {
+        select: {
+          id: true,
+          name: true,
+          value: true,
+          price: true,
+        },
+      },
     },
   });
 

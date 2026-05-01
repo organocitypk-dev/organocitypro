@@ -25,6 +25,11 @@ const productSchema = z.object({
   tags: z.array(z.string()).default([]),
   collectionIds: z.array(z.string()).default([]),
   isFeatured: z.boolean().default(false),
+  variations: z.array(z.object({
+    name: z.string().min(1, "Variation name is required"),
+    value: z.string().min(1, "Variation value is required"),
+    price: z.number().min(0, "Variation price must be positive"),
+  })).default([]),
 });
 
 export async function GET(request: Request) {
@@ -86,7 +91,18 @@ export async function POST(request: Request) {
     const validated = productSchema.parse(body);
 
     const product = await prisma.product.create({
-      data: validated,
+      data: {
+        ...validated,
+        variations: validated.variations?.length
+          ? {
+              create: validated.variations.map((v: any) => ({
+                name: v.name,
+                value: v.value,
+                price: v.price,
+              })),
+            }
+          : undefined,
+      },
     });
 
     return NextResponse.json({ product }, { status: 201 });

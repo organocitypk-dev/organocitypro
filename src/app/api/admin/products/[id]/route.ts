@@ -25,6 +25,11 @@ const productSchema = z.object({
   tags: z.array(z.string()).default([]),
   collectionIds: z.array(z.string()).default([]),
   isFeatured: z.boolean().default(false),
+  variations: z.array(z.object({
+    name: z.string().min(1, "Variation name is required"),
+    value: z.string().min(1, "Variation value is required"),
+    price: z.number().min(0, "Variation price must be positive"),
+  })).default([]),
 });
 
 export async function GET(
@@ -37,6 +42,7 @@ export async function GET(
     
     const product = await prisma.product.findUnique({
       where: { id },
+      include: { variations: true },
     });
 
     if (!product) {
@@ -66,7 +72,19 @@ export async function PUT(
 
     const product = await prisma.product.update({
       where: { id },
-      data: validated,
+      data: {
+        ...validated,
+        variations: {
+          deleteMany: {},
+          ...(validated.variations?.length ? {
+            create: validated.variations.map((v: any) => ({
+              name: v.name,
+              value: v.value,
+              price: v.price,
+            })),
+          } : {}),
+        },
+      },
     });
 
     return NextResponse.json(product);

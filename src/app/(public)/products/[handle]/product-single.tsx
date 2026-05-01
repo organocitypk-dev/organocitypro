@@ -65,56 +65,101 @@ export function ProductSingle({ data }: Props) {
   const [url, setUrl] = useState("");
   const [buyLoading, setBuyLoading] = useState(false);
   const [wishlisted, setWishlisted] = useState(false);
+  const [selectedVariations, setSelectedVariations] = useState<Record<string, string>>({});
   const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
 
   useEffect(() => {
     if (typeof window !== "undefined") setUrl(window.location.href);
 
     // Track ViewContent event on product page load
-    const targetVariantId = defaultVariantId;
-    const price = targetVariantId
-      ? parseFloat(
-          data.variants?.nodes.find((v) => v.id === targetVariantId)?.price
-            .amount || "0",
-        )
-      : 0;
-    viewContent(data.title, targetVariantId || data.handle, price);
-  }, [data.title, data.handle, data.variants?.nodes, defaultVariantId]);
+    const price = parseFloat(
+      data.variants?.nodes[0]?.price.amount || data.priceRange?.minVariantPrice?.amount || "0",
+    );
+    viewContent(data.title, data.id, price);
+  }, [data.title, data.id, data.variants?.nodes, data.priceRange?.minVariantPrice?.amount]);
 
   const changeQty = (n: number) => setQuantity((q) => Math.max(1, q + n));
 
-  const addToCart = async () => {
+  const getSelectedVariationId = () => {
+    // Find the exact variation matching selected name/value pairs
+    if (data.variations && data.variations.length > 0 && Object.keys(selectedVariations).length > 0) {
+      const matching = data.variations.find((v) =>
+        Object.entries(selectedVariations).every(([name, value]) => {
+          const variation = data.variations?.find((vv) => vv.name === name && vv.value === value);
+          return variation !== undefined;
+        })
+      );
+      if (matching) return matching.id;
+    }
+    return null;
+  };
+
+  const getSelectedPrice = () => {
+    const variationId = getSelectedVariationId();
+    if (variationId) {
+      const variation = data.variations?.find((v) => v.id === variationId);
+      if (variation) return parseFloat(variation.price.amount);
+    }
     const targetVariantId = variantId || selectedVariant?.id || defaultVariantId;
-    if (!targetVariantId) {
+    if (targetVariantId) {
+      const variant = data.variants?.nodes.find((v: any) => v.id === targetVariantId);
+      if (variant) return parseFloat(variant.price.amount);
+    }
+    return 0;
+  };
+
+  const getSelectedDisplayLabel = () => {
+    if (data.variations && data.variations.length > 0 && Object.keys(selectedVariations).length > 0) {
+      const labels = Object.entries(selectedVariations).map(([name, value]) => `${name}: ${value}`);
+      return labels.join(", ");
+    }
+    const targetVariantId = variantId || selectedVariant?.id || defaultVariantId;
+    if (targetVariantId) {
+      const variant = data.variants?.nodes.find((v: any) => v.id === targetVariantId);
+      if (variant && variant.selectedOptions.length > 0) {
+        return variant.selectedOptions.map((o: any) => `${o.name}: ${o.value}`).join(", ");
+      }
+    }
+    return "";
+  };
+
+  const addToCart = async () => {
+    const variationId = getSelectedVariationId();
+    const targetVariantId = variantId || selectedVariant?.id || defaultVariantId;
+    
+    const merchandiseId = variationId || targetVariantId;
+    if (!merchandiseId) {
       toast.error("This product is not available right now");
       return;
     }
     try {
-      await linesAdd([{ merchandiseId: targetVariantId, quantity }]);
+      await linesAdd([{ merchandiseId, quantity }]);
+      const price = getSelectedPrice();
+      const label = getSelectedDisplayLabel();
       toast.success("Added to cart", {
-        description: `${quantity} × ${data.title}`,
+        description: `${quantity} × ${data.title}${label ? ` (${label})` : ""}`,
         icon: <ShoppingCart className="h-4 w-4" />,
       });
 
       // Track AddToCart event
-      const price = selectedVariant
-        ? parseFloat(selectedVariant.price.amount)
-        : 0;
-      trackAddToCart(data.title, targetVariantId, price);
+      trackAddToCart(data.title, merchandiseId, price);
     } catch {
       toast.error("Failed to add to cart");
     }
   };
 
   const buyNow = async () => {
+    const variationId = getSelectedVariationId();
     const targetVariantId = variantId || selectedVariant?.id || defaultVariantId;
-    if (!targetVariantId) {
+    
+    const merchandiseId = variationId || targetVariantId;
+    if (!merchandiseId) {
       toast.error("This product is not available right now");
       return;
     }
     setBuyLoading(true);
     try {
-      await linesAdd([{ merchandiseId: targetVariantId, quantity }]);
+      await linesAdd([{ merchandiseId, quantity }]);
       router.push("/checkout");
     } catch {
       toast.error("Checkout failed");
@@ -420,10 +465,59 @@ export function ProductSingle({ data }: Props) {
                       </Button>
                     </div>
                   </div>
-                </div>
+                 </div>
 
-                {/* Actions */}
-                <div className="space-y-4 pt-5 sm:pt-6">
+                 {/* Variations */}
+                 {data.variations && data.variations.length > 0 && (
+                   <div className="rounded-lg border border-[#C6A24A]/20 bg-[#F6F1E7]/60 p-4">
+                     <p className="text-sm font-semibold text-[#1E1F1C] mb-3">Available Variations</p>
+                     <div className="space-y-3">
+                       {data.variations.map((variation) => (
+                         <div key={variation.id} className="flex items-center justify-between gap-4">
+                           <div className="flex-1">
+                             <span className="text-sm font-medium text-[#1E1F1C]">{variation.name}</span>
+                             <span className="text-xs text-[#5A5E55] ml-2">{variation.value}</span>
+                           </div>
+                           <div className="flex items-center gap-3">
+                             <span className="text-sm font-semibold text-[#1F6B4F]">
+                               <Money data={variation.price} />
+                             </span>
+                             <button
+                               onClick={() =>
+                                 setSelectedVariations((current) => {
+                                   const next = { ...current };
+                                   if (next[variation.name]) {
+                                     delete next[variation.name];
+                                   } else {
+                                     next[variation.name] = variation.value;
+                                   }
+                                   return next;
+                                 })
+                               }
+                               className={`rounded-full w-5 h-5 border-2 flex items-center justify-center transition-all ${
+                                 selectedVariations[variation.name] === variation.value
+                                   ? "bg-[#1F6B4F] border-[#1F6B4F] text-white"
+                                   : "border-[#C6A24A]/30 text-transparent"
+                               }`}
+                             >
+                               <svg viewBox="0 0 24 24" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="3">
+                                 <polyline points="20 6 9 17 4 12" />
+                               </svg>
+                             </button>
+                           </div>
+                         </div>
+                       ))}
+                       {Object.keys(selectedVariations).length === 0 && (
+                         <p className="text-xs text-[#5A5E55] text-center py-2">
+                           Select a variation above to see its price and details
+                         </p>
+                       )}
+                     </div>
+                   </div>
+                 )}
+
+                 {/* Actions */}
+                 <div className="space-y-4 pt-5 sm:pt-6">
 
                   {/* Buttons */}
                   <div className="grid gap-3 sm:gap-4 sm:grid-cols-3">
@@ -480,9 +574,9 @@ export function ProductSingle({ data }: Props) {
                       <RefreshCw className="h-4 w-4 text-[#1F6B4F]" />
                       Easy returns
                     </span>
-                  </div>
+                   </div>
 
-                </div>
+                 </div>
               </div>
 
               {/* Tabs */}

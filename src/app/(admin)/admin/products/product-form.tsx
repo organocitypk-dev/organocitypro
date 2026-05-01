@@ -32,6 +32,7 @@ export type ProductFormValues = {
   tags: string[];
   collectionIds: string[];
   isFeatured: boolean;
+  variations: Array<{ name: string; value: string; price: number }>;
 };
 
 function slugifyHandle(input: string) {
@@ -70,6 +71,7 @@ export function ProductForm({
     tags: [],
     collectionIds: [],
     isFeatured: false,
+    variations: [],
     ...initialValues,
   });
   const [saving, setSaving] = useState(false);
@@ -212,9 +214,87 @@ export function ProductForm({
               onChange={(e) => setValues((v) => ({ ...v, isFeatured: e.target.checked }))}
               className="rounded border-gray-300"
             />
-            Mark as Featured Product
-          </label>
-          <div className="flex justify-end">
+             Mark as Featured Product
+           </label>
+           <div className="rounded-lg border border-[#C6A24A]/20 bg-[#F6F1E7]/60 p-3 md:p-4">
+             <div className="mb-3 flex items-center justify-between">
+               <p className="text-sm font-semibold text-[#1E1F1C]">Product Variations</p>
+               <button
+                 type="button"
+                 onClick={() =>
+                   setValues((v) => ({
+                     ...v,
+                     variations: [...v.variations, { name: "", value: "", price: values.price }],
+                   }))
+                 }
+                 className="rounded-lg bg-[#1F6B4F] px-3 py-1 text-xs text-[#F6F1E7] hover:bg-[#17513D]"
+               >
+                 + Add Variation
+               </button>
+             </div>
+
+             <div className="space-y-3">
+               {values.variations.map((variation, idx) => (
+                 <div key={idx} className="flex gap-3">
+                   <input
+                     value={variation.name}
+                     onChange={(e) =>
+                       setValues((v) => {
+                         const newVars = [...v.variations];
+                         newVars[idx].name = e.target.value;
+                         return { ...v, variations: newVars };
+                       })
+                     }
+                     className="flex-1 rounded-lg border border-gray-300 px-3 py-1.5 text-sm"
+                     placeholder="Name (e.g. size)"
+                   />
+                   <input
+                     value={variation.value}
+                     onChange={(e) =>
+                       setValues((v) => {
+                         const newVars = [...v.variations];
+                         newVars[idx].value = e.target.value;
+                         return { ...v, variations: newVars };
+                       })
+                     }
+                     className="flex-1 rounded-lg border border-gray-300 px-3 py-1.5 text-sm"
+                     placeholder="Value (e.g. 250g)"
+                   />
+                   <input
+                     type="number"
+                     min="0"
+                     step="0.01"
+                     value={variation.price}
+                     onChange={(e) =>
+                       setValues((v) => {
+                         const newVars = [...v.variations];
+                         newVars[idx].price = Number(e.target.value);
+                         return { ...v, variations: newVars };
+                       })
+                     }
+                     className="w-24 rounded-lg border border-gray-300 px-3 py-1.5 text-sm"
+                     placeholder="Price"
+                   />
+                   <button
+                     type="button"
+                     onClick={() =>
+                       setValues((v) => ({
+                         ...v,
+                         variations: v.variations.filter((_, i) => i !== idx),
+                       }))
+                     }
+                     className="rounded-lg border border-red-300 px-3 py-1.5 text-xs text-red-600 hover:bg-red-50"
+                   >
+                     Remove
+                   </button>
+                 </div>
+               ))}
+               {values.variations.length === 0 && (
+                 <p className="text-xs text-[#5A5E55] text-center py-4">No variations added. Click "Add Variation" to create one.</p>
+               )}
+             </div>
+           </div>
+           <div className="flex justify-end">
             <button type="submit" disabled={saving} className="rounded-lg bg-[#1F6B4F] px-4 py-2 md:px-5 md:py-2.5 text-xs md:text-sm font-semibold text-white hover:bg-[#17513D] disabled:opacity-50">{saving ? "Saving..." : "Save"}</button>
           </div>
         </div>
