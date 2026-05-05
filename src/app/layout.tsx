@@ -6,6 +6,7 @@ import InstallPrompt from "@/components/InstallPrompt";
 import ServiceWorkerRegistration from "@/components/service-worker-registration";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "Organocity",
@@ -42,14 +43,10 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="theme-color" content="#C6A24A" />
         {/* Meta Pixel Code */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','1520641896287637');fbq('track','PageView');`,
-          }}
-        />
+        <Script id="meta-pixel" strategy="beforeInteractive" src="/meta-pixel.js" />
         {/* End Meta Pixel Code */}
       </head>
-      <body>
+      <body suppressHydrationWarning>
         <Providers>
           {children}
           <SpeedInsights />
