@@ -153,16 +153,26 @@ model BlogPost {
 }
 
 model Review {
-  id            String      @id @default(cuid())
-  authorName     String
-  authorImage   String?
-  rating        Int         @default(5)
-  content       String
-  productId     String?
-  isFeatured    Boolean     @default(false)
-  isActive      Boolean     @default(true)
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  id              String      @id @default(cuid())
+  authorName      String
+  authorEmail     String?
+  authorImage     String?
+  rating          Int         @default(5)
+  content         String
+  productId       String?
+  productHandle   String?
+  isFeatured      Boolean     @default(false)
+  status          String      @default("pending") // pending, approved, rejected
+  isVerifiedPurchase Boolean  @default(false)
+  helpfulCount    Int         @default(0)
+  images          Json        @default("[]")
+  adminNote       String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@index([productId])
+  @@index([status])
+  @@index([isFeatured])
 }
 
 model Certificate {

@@ -103,7 +103,7 @@ export default async function Page() {
       select: { id: true, name: true, image: true, isVerifiedBy: true },
     }),
     prisma.review.findMany({
-      where: { isFeatured: true, isActive: true },
+      where: { isFeatured: true, status: "approved" },
       orderBy: { createdAt: "desc" },
       take: 10,
       select: { id: true, authorName: true, rating: true, content: true },

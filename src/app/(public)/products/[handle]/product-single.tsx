@@ -41,6 +41,7 @@ import { titleize } from "@esmate/utils/string";
 import { useVariantSelector } from "@/hooks/use-variant-selector";
 import { StoreProductCard } from "@/components/store-product-card-wrapper";
 import { getProductSingle } from "./service";
+import { ProductReviews } from "@/components/product-reviews";
 
 interface Props {
   data: Awaited<ReturnType<typeof getProductSingle>>;
@@ -49,10 +50,17 @@ interface Props {
 export function ProductSingle({ data }: Props) {
   const router = useRouter();
   const { linesAdd } = useCart();
+  const [reviewStats, setReviewStats] = useState<ReviewStats | null>(null);
 
   const defaultVariantId = useMemo(() => {
     return data.variants?.nodes.find((v) => v.availableForSale)?.id || data.variants?.nodes[0]?.id;
   }, [data.variants?.nodes]);
+
+  interface ReviewStats {
+    averageRating: number;
+    totalReviews: number;
+    distribution: { 1: number; 2: number; 3: number; 4: number; 5: number };
+  }
 
   const { variantId, options, selectOption } = useVariantSelector(data, defaultVariantId);
 
@@ -68,6 +76,15 @@ export function ProductSingle({ data }: Props) {
   const [selectedVariations, setSelectedVariations] = useState<Record<string, string>>({});
   const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
 
+  // Extract product handle from the URL for reviews
+  const productHandle = useMemo(() => {
+    if (typeof window !== "undefined") {
+      const path = window.location.pathname;
+      return path.split("/").pop() || data.handle;
+    }
+    return data.handle;
+  }, [data.handle]);
+
   useEffect(() => {
     if (typeof window !== "undefined") setUrl(window.location.href);
 
@@ -75,7 +92,22 @@ export function ProductSingle({ data }: Props) {
       data.variants?.nodes[0]?.price.amount || data.priceRange?.minVariantPrice?.amount || "0",
     );
     viewContent(data.title, data.id, price);
-  }, [data.title, data.id, data.variants?.nodes, data.priceRange?.minVariantPrice?.amount]);
+
+    // Fetch review stats for the product
+    fetchReviewStats();
+  }, [data.title, data.id, data.variants?.nodes, data.priceRange?.minVariantPrice?.amount, productHandle]);
+
+  async function fetchReviewStats() {
+    try {
+      const res = await fetch(`/api/reviews?productHandle=${productHandle}&limit=1`);
+      const data = await res.json();
+      if (data.statistics) {
+        setReviewStats(data.statistics);
+      }
+    } catch (error) {
+      console.error("Failed to fetch review stats:", error);
+    }
+  }
 
   const changeQty = (n: number) => setQuantity((q) => Math.max(1, q + n));
 
@@ -308,27 +340,41 @@ export function ProductSingle({ data }: Props) {
 
             {/* RIGHT COLUMN - Product Info */}
             <div className="space-y-4">
-              {/* Header Card */}
-              <div className="rounded-xl bg-white border border-[#C6A24A]/20 p-4">
-                <div className="flex items-start justify-between gap-3 mb-3">
-                  <div className="flex-1 min-w-0">
-                    <h1 className="text-xl font-bold tracking-tight text-[#1E1F1C] mb-2 break-words">
-                      {data.title}
-                    </h1>
-                    <div className="flex items-center gap-2">
-                      <div className="flex">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} className="h-3 w-3 fill-[#C6A24A] text-[#C6A24A]" />
-                        ))}
+{/* Header Card */}
+               <div className="rounded-xl bg-white border border-[#C6A24A]/20 p-4">
+                 <div className="flex items-start justify-between gap-3 mb-3">
+                   <div className="flex-1 min-w-0">
+                     <h1 className="text-xl font-bold tracking-tight text-[#1E1F1C] mb-2 break-words">
+                       {data.title}
+                     </h1>
+<div className="flex items-center gap-2">
+                        <div className="flex">
+                          {[1, 2, 3, 4, 5].map((star) => {
+                            const fillPercent = reviewStats && reviewStats.totalReviews > 0
+                              ? Math.max(0, Math.min(100, (reviewStats.averageRating - star + 1) * 100))
+                              : 0;
+                            return (
+                              <div key={star} className="relative">
+                                <Star className="h-3 w-3 text-gray-300" />
+                                {fillPercent > 0 && (
+                                  <div className="absolute inset-0 overflow-hidden" style={{ width: `${fillPercent}%` }}>
+                                    <Star className="h-3 w-3 fill-[#C6A24A] text-[#C6A24A]" />
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                        <span className="text-xs text-[#5A5E55]">
+                          {reviewStats?.totalReviews ? `(${reviewStats.averageRating.toFixed(1)} • ${reviewStats.totalReviews} reviews)` : "No reviews yet"}
+                        </span>
                       </div>
-                      <span className="text-xs text-[#5A5E55]">(24 reviews)</span>
-                    </div>
-                  </div>
-                  <Badge variant="secondary" className="shrink-0 text-xs bg-[#F6F1E7] text-[#1F6B4F] border border-[#C6A24A]/20">
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#1F6B4F] mr-1 animate-pulse" />
-                    In Stock
-                  </Badge>
-                </div>
+                   </div>
+                   <Badge variant="secondary" className="shrink-0 text-xs bg-[#F6F1E7] text-[#1F6B4F] border border-[#C6A24A]/20">
+                     <div className="w-1.5 h-1.5 rounded-full bg-[#1F6B4F] mr-1 animate-pulse" />
+                     In Stock
+                   </Badge>
+                 </div>
 
                 {(selectedVariant || displayPrice) && (
                   <div className="mt-3">
@@ -354,9 +400,6 @@ export function ProductSingle({ data }: Props) {
                         Price updated based on your selection
                       </p>
                     )}
-                    <p className="text-xs text-[#5A5E55] mt-2 line-clamp-2">
-                      {data.description?.replace(/<[^>]*>/g, "").substring(0, 120)}...
-                    </p>
                   </div>
                 )}
               </div>
@@ -543,45 +586,44 @@ export function ProductSingle({ data }: Props) {
                 </div>
               </div>
 
-              {/* Tabs */}
-              <div className="rounded-xl bg-white border border-[#C6A24A]/20 overflow-hidden">
-                <Tabs defaultValue="description">
-                  <TabsList className="grid w-full grid-cols-3 bg-[#F6F1E7] border-b border-[#C6A24A]/20 h-10">
-                    <TabsTrigger value="description" className="text-xs data-[state=active]:bg-white">Description</TabsTrigger>
-                    <TabsTrigger value="specs" className="text-xs data-[state=active]:bg-white">Specs</TabsTrigger>
-                    <TabsTrigger value="reviews" className="text-xs data-[state=active]:bg-white">Reviews</TabsTrigger>
-                  </TabsList>
+{/* Description & Specs Tabs */}
+               <div className="rounded-xl bg-white border border-[#C6A24A]/20 overflow-hidden">
+                 <Tabs defaultValue="description">
+                   <TabsList className="grid w-full grid-cols-2 bg-[#F6F1E7] border-b border-[#C6A24A]/20 h-10">
+                     <TabsTrigger value="description" className="text-xs data-[state=active]:bg-white">Description</TabsTrigger>
+                     <TabsTrigger value="specs" className="text-xs data-[state=active]:bg-white">Specs</TabsTrigger>
+                   </TabsList>
 
-                  <TabsContent value="description" className="p-4">
-                    <div
-                      className="prose prose-sm max-w-none text-[#5A5E55] text-xs"
-                      dangerouslySetInnerHTML={{ __html: data.descriptionHtml || "" }}
-                    />
-                  </TabsContent>
+                   <TabsContent value="description" className="p-4">
+                     <div
+                       className="prose prose-sm max-w-none text-[#5A5E55] text-xs"
+                       dangerouslySetInnerHTML={{ __html: data.descriptionHtml || "" }}
+                     />
+                   </TabsContent>
 
-                  <TabsContent value="specs" className="p-4">
-                    <div className="space-y-2">
-                      {data.metafields?.map((field: any) => (
-                        <div key={field.key} className="flex justify-between gap-3 py-2 text-xs border-b border-[#C6A24A]/10">
-                          <span className="font-semibold text-[#1E1F1C]">{field.key}</span>
-                          <span className="text-[#5A5E55] text-right">{field.value}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </TabsContent>
+                   <TabsContent value="specs" className="p-4">
+                     <div className="space-y-2">
+                       {data.metafields?.map((field: any) => (
+                         <div key={field.key} className="flex justify-between gap-3 py-2 text-xs border-b border-[#C6A24A]/10">
+                           <span className="font-semibold text-[#1E1F1C]">{field.key}</span>
+                           <span className="text-[#5A5E55] text-right">{field.value}</span>
+                         </div>
+                       ))}
+                     </div>
+                   </TabsContent>
+                 </Tabs>
+               </div>
 
-                  <TabsContent value="reviews" className="p-4">
-                    <div className="rounded-lg border border-[#C6A24A]/20 bg-[#F6F1E7] p-4 text-center">
-                      <Star className="h-6 w-6 text-[#C6A24A] mx-auto mb-2" />
-                      <h3 className="text-sm font-bold mb-1 text-[#1E1F1C]">Customer Reviews</h3>
-                      <p className="text-xs text-[#5A5E55]">Be the first to review!</p>
-                      <Button className="mt-3 text-xs h-8 bg-[#1F6B4F] hover:bg-[#17513D] text-white rounded-lg">
-                        Write a review
-                      </Button>
-                    </div>
-                  </TabsContent>
-                </Tabs>
-              </div>
+               {/* Reviews Section - Always Visible */}
+               <div className="rounded-xl bg-white border border-[#C6A24A]/20 overflow-hidden">
+                 <div className="border-b border-[#C6A24A]/20 bg-[#F6F1E7]/50 px-4 py-3">
+                   <h2 className="text-lg font-bold text-[#1E1F1C]">Customer Reviews</h2>
+                   <p className="text-xs text-[#5A5E55] mt-1">Share your experience with this product</p>
+                 </div>
+                 <div className="p-4">
+                   <ProductReviews productHandle={productHandle} />
+                 </div>
+               </div>
 
               {/* Share */}
               <div className="rounded-xl bg-white border border-[#C6A24A]/20 p-3">

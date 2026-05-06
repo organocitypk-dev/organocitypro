@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -25,8 +25,15 @@ import { Button } from "@esmate/shadcn/components/ui/button";
 import { Separator } from "@esmate/shadcn/components/ui/separator";
 import { Badge } from "@esmate/shadcn/components/ui/badge";
 import { FaWhatsapp } from "react-icons/fa";
+import { Star } from "lucide-react";
 
 const WHATSAPP_NUMBER = "923234567890";
+
+interface ReviewStats {
+  averageRating: number;
+  totalReviews: number;
+  distribution: { 1: number; 2: number; 3: number; 4: number; 5: number };
+}
 
 function buildWhatsAppMessage(cart: any) {
   const items = cart.lines
@@ -43,6 +50,66 @@ function buildWhatsAppMessage(cart: any) {
     .toLocaleString();
 
   return `Hi OrganoCity,%0A%0AI would like to order:%0A${items}%0A%0ATotal: Rs. ${subtotal}%0A%0APlease confirm my order. Thank you!`;
+}
+
+async function fetchReviewStats(productHandle: string): Promise<ReviewStats | null> {
+  try {
+    const res = await fetch(`/api/reviews?productHandle=${productHandle}&limit=1`);
+    const data = await res.json();
+    if (data.statistics) {
+      return data.statistics;
+    }
+  } catch (error) {
+    console.error("Failed to fetch review stats:", error);
+  }
+  return null;
+}
+
+function CartItemReviews({ productHandle }: { productHandle: string }) {
+  const [stats, setStats] = useState<ReviewStats | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (productHandle) {
+      fetchReviewStats(productHandle).then((data) => {
+        setStats(data);
+        setLoading(false);
+      });
+    }
+  }, [productHandle]);
+
+  if (loading || !stats || stats.totalReviews === 0) {
+    return <div className="text-[10px] text-[#5A5E55]">No reviews yet</div>;
+  }
+
+  return (
+    <div className="flex items-center gap-1.5 mt-1">
+      <div className="flex">
+        {[1, 2, 3, 4, 5].map((star) => {
+          const fillPercent = Math.max(0, Math.min(100, (stats.averageRating - star + 1) * 100));
+          return (
+            <div key={star} className="relative">
+              <Star className="h-2.5 w-2.5 text-gray-300" />
+              {fillPercent > 0 && (
+                <div
+                  className="absolute inset-0 overflow-hidden"
+                  style={{ width: `${fillPercent}%` }}
+                >
+                  <Star className="h-2.5 w-2.5 fill-[#C6A24A] text-[#C6A24A]" />
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      <span className="text-[10px] font-medium text-[#1E1F1C]">
+        {stats.averageRating.toFixed(1)}
+      </span>
+      <span className="text-[10px] text-[#5A5E55]">
+        ({stats.totalReviews})
+      </span>
+    </div>
+  );
 }
 
 export function Cart() {
@@ -125,6 +192,11 @@ export function Cart() {
                           </Badge>
                         ))}
                       </div>
+
+                      {/* Reviews Section */}
+                      {line?.merchandise?.product?.handle && (
+                        <CartItemReviews productHandle={line.merchandise.product.handle} />
+                      )}
 
                       <div className="flex items-center justify-between gap-3">
                         <div className="rounded-full bg-[#F6F1E7] px-3 py-1.5 text-xs font-medium text-[#5A5E55]">

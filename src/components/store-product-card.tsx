@@ -5,8 +5,9 @@ import Link from "next/link";
 import { FaWhatsapp, FaShoppingCart } from "react-icons/fa";
 import { Money, useCart } from "@/lib/commerce";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { addToCart as trackAddToCart } from "@/lib/pixel";
+import { Star } from "lucide-react";
 
 type ProductCardProps = {
   handle: string;
@@ -19,6 +20,11 @@ type ProductCardProps = {
   productId?: string;
 };
 
+interface ReviewStats {
+  averageRating: number;
+  totalReviews: number;
+}
+
 export function StoreProductCard({
   handle,
   title,
@@ -30,6 +36,7 @@ export function StoreProductCard({
   productId,
 }: ProductCardProps) {
   const [loading, setLoading] = useState(false);
+  const [reviewStats, setReviewStats] = useState<ReviewStats | null>(null);
   const { linesAdd } = useCart();
 
   const whatsapp = `https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || ""}?text=${encodeURIComponent(
@@ -37,6 +44,22 @@ export function StoreProductCard({
   )}`;
 
   const effectiveVariantId = variantId || productId;
+
+  useEffect(() => {
+    fetchReviewStats();
+  }, [handle]);
+
+  async function fetchReviewStats() {
+    try {
+      const res = await fetch(`/api/reviews?productHandle=${handle}&limit=1`);
+      const data = await res.json();
+      if (data.statistics) {
+        setReviewStats(data.statistics);
+      }
+    } catch (error) {
+      console.error("Failed to fetch review stats:", error);
+    }
+  }
 
   const handleAddToCart = async () => {
     if (!effectiveVariantId) return;
@@ -56,7 +79,6 @@ export function StoreProductCard({
         description: title,
       });
 
-      // Track AddToCart event
       const priceValue = price ? parseFloat(price.amount) : 0;
       trackAddToCart(title, effectiveVariantId, priceValue);
     } catch {
@@ -114,15 +136,42 @@ export function StoreProductCard({
       {/* CONTENT */}
       <div className="space-y-3 p-4">
 
-        {/* TITLE REMOVED - NOW ON IMAGE */}
-        {/* <div className="line-clamp-2 font-semibold text-[#1E1F1C]">
-          {title}
-        </div> */}
-
         {tag && (
           <span className="inline-flex rounded-full bg-[#F6F1E7] px-2.5 py-1 text-xs font-semibold text-[#1F6B4F]">
             {tag}
           </span>
+        )}
+
+        {/* REVIEW RATING */}
+        {reviewStats && reviewStats.totalReviews > 0 ? (
+          <div className="flex items-center gap-1.5">
+            <div className="flex">
+              {[1, 2, 3, 4, 5].map((star) => {
+                const fillPercent = Math.max(0, Math.min(100, (reviewStats.averageRating - star + 1) * 100));
+                return (
+                  <div key={star} className="relative">
+                    <Star className="h-3 w-3 text-gray-300" />
+                    {fillPercent > 0 && (
+                      <div
+                        className="absolute inset-0 overflow-hidden"
+                        style={{ width: `${fillPercent}%` }}
+                      >
+                        <Star className="h-3 w-3 fill-[#C6A24A] text-[#C6A24A]" />
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            <span className="text-xs font-medium text-[#1E1F1C]">
+              {reviewStats.averageRating.toFixed(1)}
+            </span>
+            <span className="text-xs text-[#5A5E55]">
+              ({reviewStats.totalReviews})
+            </span>
+          </div>
+        ) : (
+          <div className="text-xs text-[#5A5E55]">No reviews yet</div>
         )}
 
         {/* BUTTONS */}
