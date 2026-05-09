@@ -11,7 +11,7 @@ declare global {
  * Automatically tracked via layout.tsx, but can be called manually if needed
  */
 export const pageview = (): void => {
-  if (typeof window !== "undefined") {
+  if (typeof window !== "undefined" && typeof window.fbq === "function") {
     window.fbq("track", "PageView");
   }
 };
@@ -25,7 +25,7 @@ export const viewContent = (
   productId: string,
   price: number,
 ): void => {
-  if (typeof window !== "undefined") {
+  if (typeof window !== "undefined" && typeof window.fbq === "function") {
     window.fbq("track", "ViewContent", {
       content_name: productName,
       content_ids: [productId],
@@ -45,7 +45,7 @@ export const addToCart = (
   productId: string,
   price: number,
 ): void => {
-  if (typeof window !== "undefined") {
+  if (typeof window !== "undefined" && typeof window.fbq === "function") {
     window.fbq("track", "AddToCart", {
       content_name: productName,
       content_ids: [productId],
@@ -61,7 +61,7 @@ export const addToCart = (
  * Fire when a user views their cart
  */
 export const viewCart = (): void => {
-  if (typeof window !== "undefined") {
+  if (typeof window !== "undefined" && typeof window.fbq === "function") {
     window.fbq("track", "ViewCart");
   }
 };
@@ -71,7 +71,7 @@ export const viewCart = (): void => {
  * Fire when a user starts the checkout process
  */
 export const initiateCheckout = (totalPrice: number): void => {
-  if (typeof window !== "undefined") {
+  if (typeof window !== "undefined" && typeof window.fbq === "function") {
     window.fbq("track", "InitiateCheckout", {
       value: totalPrice,
       currency: "PKR",
@@ -84,7 +84,7 @@ export const initiateCheckout = (totalPrice: number): void => {
  * Fire when a user enters payment information
  */
 export const addPaymentInfo = (): void => {
-  if (typeof window !== "undefined") {
+  if (typeof window !== "undefined" && typeof window.fbq === "function") {
     window.fbq("track", "AddPaymentInfo");
   }
 };
@@ -94,7 +94,7 @@ export const addPaymentInfo = (): void => {
  * Fire when a user completes a purchase
  */
 export const purchase = (orderId: string, totalPrice: number): void => {
-  if (typeof window !== "undefined") {
+  if (typeof window !== "undefined" && typeof window.fbq === "function") {
     window.fbq("track", "Purchase", {
       content_ids: [orderId],
       content_type: "product",
@@ -109,7 +109,7 @@ export const purchase = (orderId: string, totalPrice: number): void => {
  * Fire when a user performs a search
  */
 export const search = (searchTerm: string): void => {
-  if (typeof window !== "undefined") {
+  if (typeof window !== "undefined" && typeof window.fbq === "function") {
     window.fbq("track", "Search", {
       search_string: searchTerm,
     });
@@ -125,7 +125,7 @@ export const addToWishlist = (
   productId: string,
   price: number,
 ): void => {
-  if (typeof window !== "undefined") {
+  if (typeof window !== "undefined" && typeof window.fbq === "function") {
     window.fbq("track", "AddToWishlist", {
       content_name: productName,
       content_ids: [productId],
@@ -140,7 +140,7 @@ export const addToWishlist = (
  * Fire when a user completes registration
  */
 export const completeRegistration = (): void => {
-  if (typeof window !== "undefined") {
+  if (typeof window !== "undefined" && typeof window.fbq === "function") {
     window.fbq("track", "CompleteRegistration");
   }
 };
@@ -150,7 +150,7 @@ export const completeRegistration = (): void => {
  * Fire when a user submits a lead form (contact, bulk order, etc.)
  */
 export const lead = (): void => {
-  if (typeof window !== "undefined") {
+  if (typeof window !== "undefined" && typeof window.fbq === "function") {
     window.fbq("track", "Lead");
   }
 };

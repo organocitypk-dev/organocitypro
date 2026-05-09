@@ -5,7 +5,7 @@ import { z } from "zod";
 const orderCreateSchema = z.object({
   customerName: z.string().min(1),
   customerEmail: z.string().email(),
-  customerPhone: z.string().optional(),
+  customerPhone: z.string().min(10, "Phone number is required and must be at least 10 digits"),
   customerAddress: z.object({
     line1: z.string().min(1),
     line2: z.string().optional(),

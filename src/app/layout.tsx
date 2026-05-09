@@ -42,11 +42,11 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="Organocity" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="theme-color" content="#C6A24A" />
-        {/* Meta Pixel Code */}
-        <Script id="meta-pixel" strategy="beforeInteractive" src="/meta-pixel.js" />
-        {/* End Meta Pixel Code */}
       </head>
       <body suppressHydrationWarning>
+        {/* Meta Pixel Code */}
+        <Script id="meta-pixel" strategy="afterInteractive" src="/meta-pixel.js" />
+        {/* End Meta Pixel Code */}
         <Providers>
           {children}
           <SpeedInsights />

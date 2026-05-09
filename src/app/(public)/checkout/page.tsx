@@ -6,8 +6,7 @@ import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/commerce";
 import { FaWhatsapp } from "react-icons/fa";
 import { addPaymentInfo, purchase } from "@/lib/pixel";
-
-const WHATSAPP_NUMBER = "923234567890";
+import { isValidWhatsAppNumber, ADMIN_WHATSAPP_NUMBER } from "@/lib/whatsapp";
 
 function buildWhatsAppMessage(cart: any, customerName: string, customerPhone: string, line1: string, line2: string, city: string, pincode: string) {
   const items = cart.lines
@@ -51,6 +50,12 @@ export default function CheckoutPage() {
   async function placeOrder(e: React.FormEvent) {
     e.preventDefault();
     if (isEmpty) return;
+
+    // Validate phone number
+    if (!customerPhone || !isValidWhatsAppNumber(customerPhone)) {
+      setError("Please enter a valid WhatsApp/Phone number for order confirmation");
+      return;
+    }
 
     setSubmitting(true);
     setError(null);
@@ -157,13 +162,21 @@ export default function CheckoutPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#1E1F1C]">Phone</label>
+                <label className="block text-sm font-medium text-[#1E1F1C]">
+                  WhatsApp/Phone Number <span className="text-red-500">*</span>
+                </label>
                 <input
                   value={customerPhone}
                   onChange={(e) => setCustomerPhone(e.target.value)}
                   className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-[#C6A24A] focus:border-transparent"
-                  placeholder="03xx..."
+                  placeholder="03xx-xxxxxxx (Required for order confirmation)"
+                  required
                 />
+                {customerPhone && !isValidWhatsAppNumber(customerPhone) && (
+                  <p className="mt-1 text-xs text-red-500">
+                    Please enter a valid phone number (10-15 digits)
+                  </p>
+                )}
               </div>
             </div>
 
@@ -221,7 +234,7 @@ export default function CheckoutPage() {
             </button>
 
             <a
-              href={`https://wa.me/${WHATSAPP_NUMBER}?text=${buildWhatsAppMessage(cart, customerName, customerPhone, line1, line2, city, pincode)}`}
+              href={`https://wa.me/${ADMIN_WHATSAPP_NUMBER}?text=${buildWhatsAppMessage(cart, customerName, customerPhone, line1, line2, city, pincode)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-3 flex w-full items-center justify-center rounded-full bg-[#25D366] px-6 py-3 text-sm font-semibold text-white hover:bg-[#128C7E]"
@@ -284,4 +297,3 @@ export default function CheckoutPage() {
     </main>
   );
 }
-

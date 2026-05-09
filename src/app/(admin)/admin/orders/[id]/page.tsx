@@ -3,8 +3,16 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { FaWhatsapp } from "react-icons/fa";
+import {
+  isValidWhatsAppNumber,
+  formatPhoneForWhatsApp,
+  buildOrderConfirmationMessage,
+  buildOrderDetailsMessage,
+  Order,
+} from "@/lib/whatsapp";
 
-type Order = {
+type OrderDetail = {
   id: string;
   orderNumber: string;
   customerName: string;
@@ -34,13 +42,17 @@ export default function OrderDetailPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [order, setOrder] = useState<Order | null>(null);
+  const [order, setOrder] = useState<OrderDetail | null>(null);
 
   const [orderStatus, setOrderStatus] = useState("pending");
   const [paymentStatus, setPaymentStatus] = useState("pending");
   const [trackingNumber, setTrackingNumber] = useState("");
   const [trackingUrl, setTrackingUrl] = useState("");
   const [notes, setNotes] = useState("");
+
+  // WhatsApp integration states
+  const [sendingWhatsApp, setSendingWhatsApp] = useState(false);
+  const [whatsAppSuccess, setWhatsAppSuccess] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -99,6 +111,45 @@ export default function OrderDetailPage() {
     }
   }
 
+  // Open WhatsApp chat with customer
+  function openCustomerWhatsApp() {
+    const phone = order?.customerPhone;
+    if (!phone) return;
+    if (!isValidWhatsAppNumber(phone)) {
+      setError("Invalid phone number for WhatsApp");
+      return;
+    }
+    const formattedPhone = formatPhoneForWhatsApp(phone);
+    const message = buildOrderDetailsMessage(order as Order);
+    const url = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
+    window.open(url, "_blank");
+  }
+
+  // Send order confirmation to customer via WhatsApp
+  function sendOrderConfirmation() {
+    const phone = order?.customerPhone;
+    if (!phone) return;
+    if (!isValidWhatsAppNumber(phone)) {
+      setError("Invalid phone number for WhatsApp");
+      return;
+    }
+    setSendingWhatsApp(true);
+    setWhatsAppSuccess(null);
+    
+    // Small delay to show loading state
+    setTimeout(() => {
+      const formattedPhone = formatPhoneForWhatsApp(phone);
+      const message = buildOrderConfirmationMessage(order as Order);
+      const url = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
+      window.open(url, "_blank");
+      setSendingWhatsApp(false);
+      setWhatsAppSuccess("WhatsApp opened! Message ready to send.");
+      
+      // Clear success message after 5 seconds
+      setTimeout(() => setWhatsAppSuccess(null), 5000);
+    }, 500);
+  }
+
   if (loading) return <div className="p-8 text-sm text-[#5A5E55]">Loading...</div>;
 
   if (error) {
@@ -118,6 +169,7 @@ export default function OrderDetailPage() {
 
   const address = order.customerAddress ?? {};
   const items = Array.isArray(order.items) ? order.items : [];
+  const hasValidWhatsApp = order.customerPhone && isValidWhatsAppNumber(order.customerPhone);
 
   return (
     <div className="p-8">
@@ -135,6 +187,12 @@ export default function OrderDetailPage() {
           Back
         </Link>
       </div>
+
+      {whatsAppSuccess && (
+        <div className="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+          {whatsAppSuccess}
+        </div>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-6">
@@ -181,13 +239,47 @@ export default function OrderDetailPage() {
         </div>
 
         <div className="space-y-6">
+          {/* Customer Info with WhatsApp Actions */}
           <div className="rounded-xl border border-[#C6A24A]/20 bg-white p-6">
             <h2 className="text-sm font-semibold text-[#1E1F1C]">Customer</h2>
             <div className="mt-3 text-sm text-[#5A5E55] space-y-1">
               <div className="text-[#1E1F1C] font-medium">{order.customerName}</div>
               <div>{order.customerEmail}</div>
-              {order.customerPhone ? <div>{order.customerPhone}</div> : null}
+              {order.customerPhone ? (
+                <div className="flex items-center gap-2">
+                  <span>{order.customerPhone}</span>
+                  {hasValidWhatsApp && (
+                    <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
+                      WhatsApp Available
+                    </span>
+                  )}
+                </div>
+              ) : (
+                <div className="text-red-500 text-xs">No phone number provided</div>
+              )}
             </div>
+            
+            {/* WhatsApp Action Buttons */}
+            {hasValidWhatsApp && (
+              <div className="mt-4 space-y-2">
+                <button
+                  onClick={openCustomerWhatsApp}
+                  className="flex w-full items-center justify-center gap-2 rounded-lg border border-[#25D366] px-4 py-2 text-sm font-medium text-[#25D366] hover:bg-[#25D366] hover:text-white transition-colors"
+                >
+                  <FaWhatsapp className="h-4 w-4" />
+                  Chat on WhatsApp
+                </button>
+                <button
+                  onClick={sendOrderConfirmation}
+                  disabled={sendingWhatsApp}
+                  className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#25D366] px-4 py-2 text-sm font-medium text-white hover:bg-[#128C7E] disabled:opacity-50 transition-colors"
+                >
+                  <FaWhatsapp className="h-4 w-4" />
+                  {sendingWhatsApp ? "Opening..." : "Send Confirmation"}
+                </button>
+              </div>
+            )}
+
             <h3 className="mt-4 text-sm font-semibold text-[#1E1F1C]">Address</h3>
             <div className="mt-2 text-sm text-[#5A5E55]">
               {[address.line1, address.line2, address.city, address.state, address.pincode, address.country]
@@ -271,4 +363,3 @@ export default function OrderDetailPage() {
     </div>
   );
 }
-

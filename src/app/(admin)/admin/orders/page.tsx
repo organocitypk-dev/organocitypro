@@ -3,12 +3,15 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { FiEye } from "react-icons/fi";
+import { FaWhatsapp } from "react-icons/fa";
+import { isValidWhatsAppNumber } from "@/lib/whatsapp";
 
 interface Order {
   id: string;
   orderNumber: string;
   customerName: string;
   customerEmail: string;
+  customerPhone?: string | null;
   total: number;
   orderStatus: string;
   createdAt: string;
@@ -56,7 +59,7 @@ export default function OrdersPage() {
       ) : (
         <div className="bg-white rounded-lg shadow overflow-hidden -mx-4 md:mx-0">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[600px]">
+            <table className="w-full min-w-[700px]">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-2 py-2 md:px-4 md:py-3 text-left text-xs font-medium text-gray-500 uppercase">
@@ -64,6 +67,9 @@ export default function OrdersPage() {
                   </th>
                   <th className="px-2 py-2 md:px-4 md:py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     Customer
+                  </th>
+                  <th className="px-2 py-2 md:px-4 md:py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    Contact
                   </th>
                   <th className="px-2 py-2 md:px-4 md:py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     Status
@@ -80,36 +86,58 @@ export default function OrdersPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {orders.map((order) => (
-                  <tr key={order.id} className="hover:bg-gray-50">
-                    <td className="px-2 py-2 md:px-4 md:py-3 font-medium text-sm">{order.orderNumber}</td>
-                    <td className="px-2 py-2 md:px-4 md:py-3 text-xs md:text-sm">{order.customerName}</td>
-                    <td className="px-2 py-2 md:px-4 md:py-3">
-                      <span
-                        className={`inline-flex rounded-full px-1.5 py-0.5 text-xs font-medium ${
-                          statusColors[order.orderStatus] ||
-                          "bg-gray-100 text-gray-700"
-                        }`}
-                      >
-                        {order.orderStatus}
-                      </span>
-                    </td>
-                    <td className="px-2 py-2 md:px-4 md:py-3 text-right font-medium text-xs md:text-sm">
-                      Rs. {order.total.toLocaleString()}
-                    </td>
-                    <td className="px-2 py-2 md:px-4 md:py-3 text-right text-xs text-gray-500">
-                      {new Date(order.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="px-2 py-2 md:px-4 md:py-3 text-right">
-                      <Link
-                        href={`/admin/orders/${order.id}`}
-                        className="inline-flex items-center gap-1 text-xs md:text-sm text-[#C6A24A] hover:underline"
-                      >
-                        <FiEye className="h-3.5 w-3.5 md:h-4 md:w-4" /> <span className="hidden sm:inline">View</span>
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
+                {orders.map((order) => {
+                  const hasWhatsApp = order.customerPhone && isValidWhatsAppNumber(order.customerPhone);
+                  return (
+                    <tr key={order.id} className="hover:bg-gray-50">
+                      <td className="px-2 py-2 md:px-4 md:py-3 font-medium text-sm">{order.orderNumber}</td>
+                      <td className="px-2 py-2 md:px-4 md:py-3 text-xs md:text-sm">{order.customerName}</td>
+                      <td className="px-2 py-2 md:px-4 md:py-3 text-xs md:text-sm">
+                        <div className="flex items-center gap-2">
+                          {order.customerPhone ? (
+                            <>
+                              <span className="truncate max-w-[120px]">{order.customerPhone}</span>
+                              {hasWhatsApp && (
+                                <span
+                                  className="flex-shrink-0 text-[#25D366]"
+                                  title="WhatsApp available"
+                                >
+                                  <FaWhatsapp className="h-4 w-4" />
+                                </span>
+                              )}
+                            </>
+                          ) : (
+                            <span className="text-gray-400 text-xs">No phone</span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-2 py-2 md:px-4 md:py-3">
+                        <span
+                          className={`inline-flex rounded-full px-1.5 py-0.5 text-xs font-medium ${
+                            statusColors[order.orderStatus] ||
+                            "bg-gray-100 text-gray-700"
+                          }`}
+                        >
+                          {order.orderStatus}
+                        </span>
+                      </td>
+                      <td className="px-2 py-2 md:px-4 md:py-3 text-right font-medium text-xs md:text-sm">
+                        Rs. {order.total.toLocaleString()}
+                      </td>
+                      <td className="px-2 py-2 md:px-4 md:py-3 text-right text-xs text-gray-500">
+                        {new Date(order.createdAt).toLocaleDateString()}
+                      </td>
+                      <td className="px-2 py-2 md:px-4 md:py-3 text-right">
+                        <Link
+                          href={`/admin/orders/${order.id}`}
+                          className="inline-flex items-center gap-1 text-xs md:text-sm text-[#C6A24A] hover:underline"
+                        >
+                          <FiEye className="h-3.5 w-3.5 md:h-4 md:w-4" /> <span className="hidden sm:inline">View</span>
+                        </Link>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -118,4 +146,3 @@ export default function OrdersPage() {
     </div>
   );
 }
-
