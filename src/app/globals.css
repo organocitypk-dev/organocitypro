@@ -65,12 +65,13 @@
   }
 }
 
-/* The storefront bottom bar is for touch phones, not merely narrow windows. */
+/* Show the storefront bottom bar on phone-shaped screens, including browser
+   mobile previews. The aspect-ratio check keeps it off square LCD layouts. */
 .mobile-bottom-nav {
   display: none;
 }
 
-@media (max-width: 767px) and (hover: none) and (pointer: coarse) {
+@media (max-width: 640px) and (max-aspect-ratio: 4 / 5) {
   .mobile-bottom-nav {
     display: block;
   }
