@@ -65,6 +65,21 @@
   }
 }
 
+/* The storefront bottom bar is for touch phones, not merely narrow windows. */
+.mobile-bottom-nav {
+  display: none;
+}
+
+@media (max-width: 767px) and (hover: none) and (pointer: coarse) {
+  .mobile-bottom-nav {
+    display: block;
+  }
+
+  .mobile-bottom-nav-spacing {
+    padding-bottom: calc(3.5rem + env(safe-area-inset-bottom));
+  }
+}
+
 .animate-scroll:hover {
   animation-play-state: paused;
 }
